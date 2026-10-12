@@ -794,3 +794,9 @@ body.has-install-banner .toast-zone { bottom: calc(var(--nav-h) + 5rem + env(saf
 @media (max-width: 400px) {
     .popup-header .icon-btn { width: 2.05rem; }
 }
+
+/* ---------- 후원하기 (메뉴) ---------- */
+/* 바깥 스크립트(위젯)를 쓰지 않고 Ko-fi 페이지로 가는 링크만 둡니다. */
+.support-btn { background: #72A4F2; color: #fff; border-color: transparent; text-decoration: none; }
+/* Ko-fi 공식 심볼 (img/kofi_symbol.png, Ko-fi 브랜드 자료에서 받은 것) */
+.support-icon { height: 1.35em; width: auto; }
