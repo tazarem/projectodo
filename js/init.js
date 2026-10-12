@@ -108,6 +108,7 @@ class ProjectodoInit {
             const action = e.target.closest('[data-action]')
             if (action) {
                 switch (action.dataset.action) {
+                    case 'favorite': return todo_app.toggleFavorite()
                     case 'project-info': return todo_app.openProjectInfo()
                     case 'project-rename': return todo_app.renameProject()
                     case 'project-delete':

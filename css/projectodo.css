@@ -782,3 +782,15 @@ body.has-install-banner .toast-zone { bottom: calc(var(--nav-h) + 5rem + env(saf
     75% { opacity: 1; }
     100% { transform: translate(var(--x), calc(var(--y) + 140px)) rotate(var(--r)) scale(1); opacity: 0; }
 }
+
+/* ---------- 즐겨찾기 ---------- */
+.fav-btn .fas.fa-star, .item-fav, .type-tabs .fa-star { color: #F9A825; }
+.type-tabs button[aria-selected="true"] .fa-star { color: inherit; }
+.item-fav { flex-shrink: 0; font-size: .85rem; }
+/* 탭이 네 개라 좁은 화면에서 넘치면 옆으로 밀어서 봄 */
+.type-tabs { overflow-x: auto; scrollbar-width: none; }
+.type-tabs::-webkit-scrollbar { display: none; }
+.type-tabs button { flex-shrink: 0; }
+@media (max-width: 400px) {
+    .popup-header .icon-btn { width: 2.05rem; }
+}

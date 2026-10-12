@@ -94,7 +94,7 @@ function periodLabel(from, to = Date.now()) {
 
 class Projectodo {
     items = []          // 저장된 기록 전부 (메모 + 프로젝트)
-    tab = 'all'         // all | project | memo
+    tab = 'all'         // all | project | memo | favorite
     q = ''              // 검색어
     open_id = null      // 지금 팝업에 열려 있는 기록
     show_next = false   // 다음 할 일이 없어도 그 칸을 펼쳐 둘지 (적어 두기 버튼을 눌렀을 때)
@@ -102,7 +102,7 @@ class Projectodo {
 
     async init() {
         this.applyTheme(todo_config.get('app_theme'))
-        this.tab = ['all', 'project', 'memo'].includes(todo_config.get('tab')) ? todo_config.get('tab') : 'all'
+        this.tab = ['all', 'project', 'memo', 'favorite'].includes(todo_config.get('tab')) ? todo_config.get('tab') : 'all'
         await idb.openDatabase()
         this.items = await idb.doSelectAll('item')
         this.render()
@@ -158,21 +158,31 @@ class Projectodo {
             { value: 'all', label: '전체', icon: 'fas fa-layer-group', count: found.length },
             { value: 'project', ...ITEM_TYPES.project, count: count('project') },
             { value: 'memo', ...ITEM_TYPES.memo, count: count('memo') },
+            { value: 'favorite', label: '', aria: '즐겨찾기', icon: 'fas fa-star', count: found.filter(i => i.favorite).length },
         ]
         $('.type-tabs').innerHTML = tabs.map(t => `
-            <button type="button" role="tab" data-tab="${t.value}" aria-selected="${this.tab === t.value}">
+            <button type="button" role="tab" data-tab="${t.value}" aria-selected="${this.tab === t.value}"${t.aria ? ` aria-label="${t.aria}"` : ''}>
                 <i class="${t.icon}"></i> ${t.label} <span class="count">${t.count}</span>
             </button>`).join('')
 
         const list = found
-            .filter(i => this.tab === 'all' || i.type === this.tab)
-            .sort((a, b) => PROJECT_STATUS[statusOf(a)].order - PROJECT_STATUS[statusOf(b)].order || b.updated_at - a.updated_at)
+            .filter(i => this.tab === 'all' || (this.tab === 'favorite' ? i.favorite : i.type === this.tab))
+            // 즐겨찾기가 맨 위, 그 안에서는 진행 중 → 완료 → 중단, 최근 고친 순
+            .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0) || PROJECT_STATUS[statusOf(a)].order - PROJECT_STATUS[statusOf(b)].order || b.updated_at - a.updated_at)
         const el = $('.item-list')
         if (!list.length && this.q.trim()) {
             el.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-search"></i>
                     <p>'${esc(this.q.trim())}'에 맞는 것이 없어요.</p>
+                </div>`
+            return
+        }
+        if (!list.length && this.tab === 'favorite') {
+            el.innerHTML = `
+                <div class="empty-state">
+                    <i class="far fa-star"></i>
+                    <p>아직 즐겨찾기한 것이 없어요.<br>프로젝트나 메모를 열고 별을 눌러 보세요.</p>
                 </div>`
             return
         }
@@ -223,6 +233,7 @@ class Projectodo {
                     <div class="item-sub">${closed ? `${closed} · ${esc(dateLabel(dateKey(new Date(p.status_at))))}` : parts.join(' · ')}</div>
                     ${now.length && !closed ? `<div class="progress" aria-hidden="true"><span style="width:${percent}%"></span></div>` : ''}
                 </div>
+                ${this.favoriteMarkHtml(p)}
                 <i class="item-arrow fas fa-chevron-right"></i>
             </div>`
     }
@@ -235,8 +246,28 @@ class Projectodo {
                     <div class="item-title">${esc(m.title)}</div>
                     ${m.content.trim() ? `<div class="item-sub clip">${esc(m.content.trim().split('\n')[0])}</div>` : ''}
                 </div>
+                ${this.favoriteMarkHtml(m)}
                 <i class="item-arrow fas fa-chevron-right"></i>
             </div>`
+    }
+
+    favoriteMarkHtml(item) {
+        return item.favorite ? `<i class="item-fav fas fa-star" aria-label="즐겨찾기"></i>` : ''
+    }
+
+    // 팝업 위쪽의 별 버튼
+    favoriteBtnHtml(item) {
+        return `<button type="button" class="icon-btn fav-btn" data-action="favorite" aria-label="즐겨찾기" aria-pressed="${!!item.favorite}"><i class="${item.favorite ? 'fas' : 'far'} fa-star"></i></button>`
+    }
+
+    async toggleFavorite() {
+        const item = this.find(this.open_id)
+        if (!item) return
+        item.favorite = item.favorite ? 0 : 1
+        await this.save(item)
+        const btn = $('.popup-header .fav-btn')
+        if (btn) btn.outerHTML = this.favoriteBtnHtml(item)
+        ui.toast(item.favorite ? '즐겨찾기에 넣었어요' : '즐겨찾기에서 뺐어요')
     }
 
     open(id) {
@@ -276,6 +307,7 @@ class Projectodo {
         ui.openPopup({
             title: '',
             actions: `
+                ${this.favoriteBtnHtml(p)}
                 <button type="button" class="icon-btn" data-action="project-info" aria-label="프로젝트 정보"><i class="fas fa-info-circle"></i></button>
                 <button type="button" class="icon-btn" data-action="project-rename" aria-label="프로젝트명 고치기"><i class="fas fa-pen"></i></button>
                 <button type="button" class="icon-btn" data-action="project-delete" aria-label="프로젝트 삭제"><i class="far fa-trash-alt"></i></button>`,
@@ -590,6 +622,7 @@ class Projectodo {
         ui.openPopup({
             title: `<i class="${ITEM_TYPES.memo.icon}"></i> ${esc(m.title)}`,
             actions: `
+                ${this.favoriteBtnHtml(m)}
                 <button type="button" class="icon-btn" data-action="memo-edit" aria-label="메모 고치기"><i class="fas fa-pen"></i></button>
                 <button type="button" class="icon-btn" data-action="memo-delete" aria-label="메모 삭제"><i class="far fa-trash-alt"></i></button>`,
             content: `
@@ -688,6 +721,7 @@ class Projectodo {
             uid: /^[a-z0-9]{6,40}$/.test(raw.uid) ? raw.uid : newUid(),
             type,
             title,
+            favorite: raw.favorite ? 1 : 0,
             created_at: time(raw.created_at),
             updated_at: time(raw.updated_at),
             status: ['done', 'stopped'].includes(raw.status) && type === 'project' ? raw.status : 'active',

@@ -20,6 +20,7 @@ class IndexedDBClient {
                 type: 'memo',       // memo | project
                 title: '',          // 메모 제목 / 프로젝트명
                 content: '',        // 메모 내용 (프로젝트는 빈 값)
+                favorite: 0,        // 즐겨찾기 0 | 1 (목록 맨 위에 모임)
                 // 아래 둘은 프로젝트 전용
                 todos: [],          // [{ id, text, done, section }] section: now(할 일) | next(다음 할 일). 배열 순서 = 화면 순서
                 history: [],        // [{ date: 'YYYY-MM-DD', items: [{ text }] }] 할 일을 모두 끝낸 날의 기록
