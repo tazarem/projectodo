@@ -2,8 +2,8 @@
     class ProjectodoWebCache {
         constructor() {
             // 앱 파일을 바꾸면 버전을 올려야 사용자 기기의 캐시가 갱신됩니다.
-            this.STATIC_CACHE_NAME = 'projectodo_static_v0.12'
-            this.DYNAMIC_CACHE_NAME = 'projectodo_dynamic_v0.12'
+            this.STATIC_CACHE_NAME = 'projectodo_static_v0.13'
+            this.DYNAMIC_CACHE_NAME = 'projectodo_dynamic_v0.13'
             this.STATIC_CACHE_LIST = [
                 './',
                 './index.html',
