@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#D7ECD9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="프로젝투두">
+    <meta name="description" content="프로젝트별 할 일과 메모를 적어 두는 투두 리스트">
+    <!-- 이 사이트의 파일에 있는 스크립트만 실행. 인라인 스크립트/이벤트 속성은 차단 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" href="./img/icons/favicon-32.png">
+    <link rel="apple-touch-icon" href="./img/icons/apple-touch-icon.png">
+
+    <link rel="stylesheet" href="./lib/css/fontawesome5/all.min.css">
+    <link rel="stylesheet" href="./css/projectodo.css">
+
+    <title>프로젝투두</title>
+
+    <script src="./config.js"></script>
+    <script src="./store/idb.js"></script>
+    <script src="./js/ui.js"></script>
+    <script src="./js/todo.js"></script>
+    <script src="./js/install.js"></script>
+    <script src="./js/init.js"></script>
+</head>
+<body>
+    <header class="top-bar">
+        <div class="logo-cover">
+            <img class="logo-img" src="./img/icons/favicon-32.png" alt="">
+            <div class="logo-text">프로젝투두</div>
+        </div>
+        <div class="right-position">
+            <button type="button" class="top-bar-btn search-btn" aria-label="검색"><i class="fas fa-search"></i></button>
+            <button type="button" class="top-bar-btn item-writer" aria-label="새로 만들기"><i class="fas fa-plus"></i></button>
+            <button type="button" class="top-bar-btn menu-btn" aria-label="메뉴"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <div class="search-banner collapse-y">
+        <div class="search-inner">
+            <i class="fas fa-search"></i>
+            <input type="search" id="item-searcher" placeholder="프로젝트명, 할 일, 메모 검색" enterkeyhint="search" autocomplete="off">
+            <button type="button" class="search-deleter hide" aria-label="검색어 지우기"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <main class="main">
+        <nav class="type-tabs" role="tablist" aria-label="종류"></nav>
+        <div class="item-list"></div>
+    </main>
+
+    <!-- popup -->
+    <div class="popup-overlay hide">
+        <div class="popup" role="dialog" aria-modal="true">
+            <div class="popup-header">
+                <div class="title"></div>
+                <div class="right-position">
+                    <div class="actions"></div>
+                    <button type="button" class="icon-btn close" aria-label="닫기"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="popup-content scroll"></div>
+        </div>
+    </div>
+
+    <!-- menu -->
+    <div class="menu-overlay collapse-x">
+        <div class="menu-screen scroll">
+            <h3>테마</h3>
+            <div class="config-caption">컬러 테마를 변경합니다</div>
+            <div class="radio-group">
+                <label><input type="radio" name="app_theme" value="sprout"> 새싹</label>
+                <label><input type="radio" name="app_theme" value="partynote"> 파티노트</label>
+                <label><input type="radio" name="app_theme" value="cryptic"> 크립틱</label>
+            </div>
+
+            <h3>앱으로 설치</h3>
+            <div class="install-section"></div>
+
+            <h3>백업</h3>
+            <div class="config-caption">적어 둔 내용은 이 기기의 브라우저(IndexedDB)에만 저장돼요. 기기를 바꾸거나 앱 데이터를 지우기 전에 내보내 두세요.</div>
+            <div class="menu-btn-group">
+                <button type="button" class="btn ghost export-btn"><i class="fas fa-download"></i> 내보내기</button>
+                <button type="button" class="btn ghost import-btn"><i class="fas fa-upload"></i> 가져오기</button>
+                <input type="file" id="import-file" accept="application/json,.json" hidden>
+            </div>
+
+            <h3>버전 정보</h3>
+            <div class="config-caption">프로젝투두 <span class="app-version"></span> · PartyNote 기반</div>
+
+            <!-- 되돌릴 수 없는 작업은 백업 버튼들과 떨어뜨려 맨 아래에 둡니다 -->
+            <section class="danger-zone">
+                <h3>전체 삭제</h3>
+                <div class="config-caption">이 기기에 저장된 프로젝트와 메모를 모두 지워요. 되돌릴 수 없으니 먼저 위의 내보내기로 백업해 두세요.</div>
+                <button type="button" class="btn danger-ghost delete-all-btn"><i class="far fa-trash-alt"></i> 전체 삭제</button>
+            </section>
+        </div>
+    </div>
+
+    <!-- 앱으로 설치 안내: 휴대폰 첫 방문 때 한 번 (닫으면 다시 안 뜸). 내용은 js/install.js -->
+    <div class="install-banner hide" role="region" aria-label="앱 설치 안내"></div>
+
+    <div class="toast-zone" aria-live="polite"></div>
+</body>
+</html>
