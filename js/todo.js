@@ -5,8 +5,9 @@ const THEMES = {
         meta_color: '#D7ECD9',
     },
     partynote: {
-        vars: { '--bg': '#FFCCBC', '--surface': '#FFF4EF', '--text': '#2B1D1A', '--sub': '#7A5A52', '--accent': '#FF8A80', '--accent-text': '#2B1D1A', '--line': '#0000001f', '--overlay': '#00000026' },
-        meta_color: '#FFCCBC',
+        // 파티노트 앱과 같은 분홍색
+        vars: { '--bg': '#FFCDD2', '--surface': '#FFF5F6', '--text': '#3A1F26', '--sub': '#8A5A66', '--accent': '#FF8FAB', '--accent-text': '#3A1F26', '--line': '#0000001f', '--overlay': '#00000022' },
+        meta_color: '#FFCDD2',
     },
     cryptic: {
         vars: { '--bg': '#0D1117', '--surface': '#161B22', '--text': '#E6EDF3', '--sub': '#8B949E', '--accent': '#00D9FF', '--accent-text': '#0D1117', '--line': '#ffffff1f', '--overlay': '#00000066' },
