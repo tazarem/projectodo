@@ -800,3 +800,11 @@ body.has-install-banner .toast-zone { bottom: calc(var(--nav-h) + 5rem + env(saf
 .support-btn { background: #72A4F2; color: #fff; border-color: transparent; text-decoration: none; }
 /* Ko-fi 공식 심볼 (img/kofi_symbol.png, Ko-fi 브랜드 자료에서 받은 것) */
 .support-icon { height: 1.35em; width: auto; }
+
+/* ---------- 아이폰: 입력칸을 눌러도 화면이 확대되지 않게 ---------- */
+/* 아이폰(Safari)은 글자가 16px보다 작은 입력칸에 커서를 두면 화면을 확대합니다.
+   아이폰에서만 입력칸 글자를 16px로 맞춰 확대를 막습니다. (다른 기기는 그대로) */
+@supports (-webkit-touch-callout: none) {
+    input:not([type="radio"]):not([type="checkbox"]):not([type="file"]), textarea, select { font-size: 16px !important; }
+    .memo-title-input { font-size: 1.1rem !important; }
+}
